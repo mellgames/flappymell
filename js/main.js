@@ -35,9 +35,12 @@ game.States.preload = function() {
         game.load.spritesheet('pipe', 'assets/pipes.png', 54, 320, 2);
         game.load.bitmapFont('flappy_font', 'assets/fonts/flappyfont/flappyfont.png', 'assets/fonts/flappyfont/flappyfont.fnt');
         game.load.audio('fly_sound', 'assets/flap.wav');
+        game.load.audio('fly_sound1', 'assets/flap1.wav'); 
+        game.load.audio('fly_sound2', 'assets/flap2.wav');
         game.load.audio('score_sound', 'assets/score.wav');
         game.load.audio('hit_pipe_sound', 'assets/pipe-hit.wav');
         game.load.audio('hit_ground_sound', 'assets/ouch.wav');
+        game.load.audio('bg_music', 'assets/bg-music.mp3');
         game.load.image('ready_text', 'assets/get-ready.png');
         game.load.image('play_tip', 'assets/instructions.png');
         game.load.image('game_over', 'assets/gameover.png');
@@ -66,6 +69,12 @@ game.States.menu = function() {
             game.state.start('play');
         });
         btn.anchor.setTo(0.5, 0.5);
+        if(!this.bgMusic) {
+            this.bgMusic = game.add.audio('bg_music');
+            this.bgMusic.loop = true;
+            this.bgMusic.volume = 0.01;
+            this.bgMusic.play();
+        }
     };
 };
 
@@ -84,9 +93,11 @@ game.States.play = function() {
         game.physics.enable(this.ground, Phaser.Physics.ARCADE);
         this.ground.body.immovable = true;
         this.soundFly = game.add.sound('fly_sound');
-		this.soundScore = game.add.sound('score_sound');
-		this.soundHitPipe = game.add.sound('hit_pipe_sound');
-		this.soundHitGround = game.add.sound('hit_ground_sound');
+        this.soundFly1 = game.add.sound('fly_sound1');
+        this.soundFly2 = game.add.sound('fly_sound2');
+        this.soundScore = game.add.sound('score_sound');
+        this.soundHitPipe = game.add.sound('hit_pipe_sound');
+        this.soundHitGround = game.add.sound('hit_ground_sound');
         this.scoreText = game.add.bitmapText(game.world.centerX - 20, 30, 'flappy_font', '0', 36);
         this.readyText = game.add.image(game.width/2, 40, 'ready_text');
         this.playTip = game.add.image(game.width/2, 300, 'play_tip');
@@ -150,7 +161,15 @@ game.States.play = function() {
     this.fly = function() {
         this.bird.body.velocity.y = -350;
         game.add.tween(this.bird).to({angle: -30}, 100, null, true, 0, 0, false);
-        this.soundFly.play();
+        var randomFlap = Math.floor(Math.random() * 2);
+        switch(randomFlap) {
+            case 0:
+                this.soundFly1.play();
+                break;
+            case 1:
+                this.soundFly2.play();
+                break;
+        }
     };
     this.hitCeil = function() {
 		this.soundHitPipe.play();
