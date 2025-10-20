@@ -5,21 +5,27 @@ game.States = {};
 
 game.States.boot = function() {
     this.preload = function() {
-    	if(typeof(GAME) !== "undefined") {
-    		this.load.baseURL = GAME + "/";
-    	}
+        if(typeof(GAME) !== "undefined") {
+            this.load.baseURL = GAME + "/";
+        }
         game.load.image('loading', 'assets/preloader.gif');
     };
+    
     this.create = function() {
+        game.renderer.renderSession.roundPixels = true;
+        game.stage.smoothed = false;
+        game.forceSingleUpdate = true;
+        game.time.advancedTiming = false;
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        
         if(!game.device.desktop){
             this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
             this.scale.pageAlignHorizontally = true;
             this.scale.pageAlignVertically = true;
+            game.physics.arcade.FPS = 30; 
         }
+        
         game.state.start('preload');
-
-
     };
 };
 
