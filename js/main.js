@@ -1,5 +1,5 @@
 
-var game = new Phaser.Game(288, 505, Phaser.CANVAS, 'game');
+var game = new Phaser.Game(288, 505, Phaser.AUTO, 'game');
 
 game.States = {};
 
@@ -8,16 +8,17 @@ game.States.boot = function() {
     	if(typeof(GAME) !== "undefined") {
     		this.load.baseURL = GAME + "/";
     	}
-        if(!game.device.desktop){
-            this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
-            this.scale.forcePortrait = true;
-            this.scale.refresh();
-        }
         game.load.image('loading', 'assets/preloader.gif');
     };
     this.create = function() {
-        game.state.start('preload');
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        if(!game.device.desktop){
+            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            this.scale.pageAlignHorizontally = true;
+            this.scale.pageAlignVertically = true;
+        }
+        game.state.start('preload');
+
 
     };
 };
@@ -118,6 +119,11 @@ game.States.play = function() {
         this.pipeGroup.setAll('body.velocity.x', -this.gameSpeed);
     };
     this.startGame = function() {
+        if (!this.soundsInitialized) {
+            this.soundFly.play();
+            this.soundFly.stop();
+            this.soundsInitialized = true;
+        }
         this.gameSpeed = 200;
         this.gameIsOver = false;
         this.hasHitGround = false;
